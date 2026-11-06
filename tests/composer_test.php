@@ -895,7 +895,12 @@ class ezcMailComposerTest extends ezcTestCase
         $this->mail->subject = "HTML message with embeded files and images.";
         $this->mail->htmlText = "<html>Some text before the simage: <img src=\"file://" . dirname( __FILE__  ) . "/parts/data/fly.jpg\" /> Here is the picture.";
         $this->mail->build();
-        $this->assertEquals( true, 462 <= strlen( $this->mail->generate() ) && strlen( $this->mail->generate() ) <= 506 );
+        // The HTML names the image by its absolute path, so the size grows with
+        // the length of this directory: 462 to 506 bytes were measured at the
+        // 33-character /home/runner/work/Mail/Mail/tests. Without the directory
+        // that is the same window, wherever the tests are checked out.
+        $size = strlen( $this->mail->generate() ) - strlen( dirname( __FILE__ ) );
+        $this->assertEquals( true, 462 - 33 <= $size && $size <= 506 - 33, $size );
     }
 
     /**
