@@ -1,3 +1,28 @@
+1.10.3 - Wednesday 25 November 2026
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Fixed: SMTP rejects envelope addresses (MAIL FROM, RCPT TO) which could
+  inject SMTP commands: line breaks, NUL, angle brackets and a quoted local
+  part with spaces or control characters (pull request #1).
+
+  BEHAVIOUR CHANGE: an address with a quoted local part that holds a space
+  (for example "john doe"@example.com) is refused by the SMTP transport with
+  an ezcMailTransportException, where it was sent before. Such addresses are
+  valid in RFC 5321 but almost never used; a caller that must send to one
+  needs to catch the exception.
+- Fixed: SMTP normalises line endings to CRLF before dot-stuffing, so a lone
+  LF or CR can no longer smuggle a "." line that ends the DATA command early
+  (pull request #2).
+- Fixed: SMTP always sends EHLO and falls back to HELO only when the server
+  rejects EHLO (pull request #3).
+- Fixed: SMTP tries the next authentication method if the server rejects one
+  (pull request #4).
+- Added: tests/local_smtp, one fake SMTP server (tests/local_smtp/fake_smtp_server.php)
+  and one test case base class shared by the new SMTP tests; run them with
+  vendor/bin/phpunit --test-suffix _test.php tests/local_smtp (they also run
+  in the full suite).
+
+
 1.10.2 - Friday 6 November 2026
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
