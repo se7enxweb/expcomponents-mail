@@ -25,72 +25,7 @@
  * @subpackage Tests
  */
 
-/**
- * Runs fake_smtp_server.php in a separate process.
- *
- * @package Mail
- * @subpackage Tests
- * @access private
- */
-class ezcMailFakeSmtpServer
-{
-    public $port;
-
-    private $process;
-
-    private $pipes;
-
-    public function __construct( array $config = array() )
-    {
-        $command = escapeshellarg( PHP_BINARY ) . ' ' .
-                   escapeshellarg( __DIR__ . '/fake_smtp_server.php' ) . ' ' .
-                   escapeshellarg( base64_encode( json_encode( $config ) ) );
-        $this->process = proc_open( $command, array( 1 => array( 'pipe', 'w' ), 2 => array( 'pipe', 'w' ) ), $this->pipes );
-        $line = fgets( $this->pipes[1] );
-        if ( !preg_match( '/^PORT (\d+)$/', trim( (string) $line ), $matches ) )
-        {
-            throw new RuntimeException( 'Fake SMTP server did not start: ' . stream_get_contents( $this->pipes[2] ) );
-        }
-        $this->port = (int) $matches[1];
-    }
-
-    /**
-     * Waits for the connection to end and returns the received lines as an
-     * array of array( type, line ), where type is 'command', 'data' or
-     * 'end-of-data'.
-     */
-    public function received()
-    {
-        $log = json_decode( (string) stream_get_contents( $this->pipes[1] ), true );
-        $this->stop();
-        return is_array( $log ) ? $log : array();
-    }
-
-    /**
-     * Returns the received commands, without line endings.
-     */
-    public function commands()
-    {
-        $commands = array();
-        foreach ( $this->received() as $entry )
-        {
-            if ( $entry[0] === 'command' )
-            {
-                $commands[] = rtrim( $entry[1], "\r\n" );
-            }
-        }
-        return $commands;
-    }
-
-    public function stop()
-    {
-        if ( is_resource( $this->process ) )
-        {
-            proc_terminate( $this->process );
-            proc_close( $this->process );
-        }
-    }
-}
+require_once( dirname( __FILE__ ) . '/fake_smtp_server_process.php' );
 
 /**
  * Base class for the SMTP transport tests which run against a local fake

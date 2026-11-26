@@ -1,3 +1,18 @@
+1.10.4 - Wednesday 25 November 2026
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Fixed: The fake SMTP server of tests/local_smtp is started the way the
+  Exponential kernel tests start their loopback servers: it holds none of the
+  test process's descriptors (flock()ed files, the pipe the test output goes
+  to), a guarding shell stops it on TERM and as soon as the test process is
+  gone, and its port line is awaited for at most 10 seconds instead of
+  forever. Before, a test run that died before its tearDown left the server
+  running until its own accept timeout, holding the test output pipe open.
+- Added: tests/local_smtp/fake_smtp_server_isolation_test.php proves both
+  (no inherited lock file, no server left after the test process is killed).
+  No change to the library itself.
+
+
 1.10.3 - Wednesday 25 November 2026
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
