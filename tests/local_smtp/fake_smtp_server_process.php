@@ -72,7 +72,7 @@ class ezcMailFakeSmtpServer
         if ( DIRECTORY_SEPARATOR === '\\' )
         {
             // No POSIX shell (Windows): the server alone
-            $this->process = proc_open( $command, $descriptors, $this->pipes );
+            $this->process = proc_open( self::commandLine( $command ), $descriptors, $this->pipes );
         }
         else
         {
@@ -89,7 +89,9 @@ class ezcMailFakeSmtpServer
                     . 'stop() { kill "$server" 2>/dev/null; wait "$server" 2>/dev/null; exit 0; }; '
                     . 'trap stop TERM INT HUP; '
                     . 'while kill -0 "$PPID" 2>/dev/null && kill -0 "$server" 2>/dev/null; do sleep 1 & wait $!; done; stop';
-            $this->process = proc_open( array_merge( array( '/bin/sh', '-c', $script, 'sh' ), $command ), $descriptors, $this->pipes );
+            // A command line, not an argument list (PHP < 7.4); exec makes the
+            // guarding shell the process that proc_terminate() signals
+            $this->process = proc_open( 'exec ' . self::commandLine( array_merge( array( '/bin/sh', '-c', $script, 'sh' ), $command ) ), $descriptors, $this->pipes );
         }
         if ( !is_resource( $this->process ) )
         {
@@ -104,6 +106,15 @@ class ezcMailFakeSmtpServer
             throw new RuntimeException( 'Fake SMTP server did not start: ' . ( $line === false ? 'no port line within ' . self::START_TIMEOUT . ' s' : $line ) . ' ' . $error );
         }
         $this->port = (int) $matches[1];
+    }
+
+    /**
+     * Returns $arguments as one command line (proc_open() takes an argument
+     * list only from PHP 7.4 on)
+     */
+    public static function commandLine( array $arguments )
+    {
+        return implode( ' ', array_map( 'escapeshellarg', $arguments ) );
     }
 
     /**

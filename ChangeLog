@@ -1,3 +1,14 @@
+1.10.5 - Thursday 26 November 2026
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Fixed: The tests of tests/local_smtp run on PHP 7.1 to 7.3 again. 1.10.4
+  started the fake SMTP server with an argument list, which proc_open()
+  takes only from PHP 7.4 on, so all 39 SMTP tests errored on PHP 7.3 (CI
+  job "PHP: 7.3"). The server is now started through a command line built
+  with escapeshellarg(). Tests only; the library is the same as in 1.10.3
+  and 1.10.4.
+
+
 1.10.4 - Wednesday 25 November 2026
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -91,7 +91,7 @@ class ezcMailFakeSmtpServerIsolationTest extends ezcTestCase
         // A stand-in for a test process that dies without its tearDown
         $code = 'require ' . var_export( __DIR__ . '/fake_smtp_server_process.php', true ) . ';'
               . '$s = new ezcMailFakeSmtpServer(); echo $s->argument, "\n"; sleep( 60 );';
-        $child = proc_open( array( PHP_BINARY, '-r', $code ), array( 1 => array( 'pipe', 'w' ), 2 => array( 'file', '/dev/null', 'w' ) ), $pipes );
+        $child = proc_open( 'exec ' . ezcMailFakeSmtpServer::commandLine( array( PHP_BINARY, '-r', $code ) ), array( 1 => array( 'pipe', 'w' ), 2 => array( 'file', '/dev/null', 'w' ) ), $pipes );
         $argument = trim( (string) fgets( $pipes[1] ) );
         $this->arguments[] = $argument;
         $this->assertNotSame( '', $argument, 'the stand-in started a server' );
