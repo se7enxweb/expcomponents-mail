@@ -2,7 +2,7 @@
 
 The component allows you construct and/or parse Mail messages conforming to  the mail standard. It has support for attachments, multipart messages and HTML  mail. It also interfaces with SMTP to send mail or IMAP, POP3 or mbox to  retrieve e-mail.
 
-This is the Exponential fork of [zetacomponents/Mail](https://github.com/zetacomponents/Mail),
+This is the Exponential Components fork of [zetacomponents/Mail](https://github.com/zetacomponents/Mail),
 maintained by 7x (se7en.x) and the Exponential Foundation for Exponential and anyone else
 who uses the Zeta Components Mail component on current PHP versions. All credit for the
 component goes to the Zeta Components authors listed in `composer.json` and `CREDITS`;
